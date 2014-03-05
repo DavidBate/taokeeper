@@ -69,6 +69,8 @@ public class Initialization extends HttpServlet implements Servlet {
 
         /** */
         ThreadUtil.startThread( new HostPerformanceCollectTask() );
+        
+        SchedulerManager.init();
 
         Timer timer = new Timer();
 		//开启ZooKeeper Node的Path检查

@@ -10,9 +10,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import com.taobao.taokeeper.model.AlarmSettings;
 import com.taobao.taokeeper.model.TaoKeeperSettings;
 import com.taobao.taokeeper.model.ZooKeeperCluster;
-import com.taobao.taokeeper.model.ZooKeeperStatus;
+import com.taobao.taokeeper.model.ZooKeeperDelayInfo;
+import com.taobao.taokeeper.model.ZooKeeperRTInfo;
 import com.taobao.taokeeper.model.ZooKeeperStatusV2;
-
 import common.toolkit.java.entity.HostPerformanceEntity;
 import common.toolkit.java.entity.io.Connection;
 
@@ -38,8 +38,11 @@ public class GlobalInstance {
 	public static boolean need_zk_status_collect = true;
 	
 	public static boolean need_client_throughput_stat = true;
+	/**
+	 * 是否需要检查各种操作的RT
+	 */
+	public static boolean need_zk_rt_collect = true;
 	
-
 	// ZooKeeper集群中每台机器状态信息
 	private static Map< String/** IP */
 	, ZooKeeperStatusV2 > zooKeeperStatusSet = new ConcurrentHashMap< String, ZooKeeperStatusV2 >();
@@ -54,6 +57,15 @@ public class GlobalInstance {
 	private static Map< String/** IP */ , HostPerformanceEntity > hostPerformanceEntitySet = new ConcurrentHashMap< String, HostPerformanceEntity >();
 	// ZooKeeper集群中每台机器状态信息-更新时间
 	public static String timeOfUpdateHostPerformanceSet = EMPTY_STRING;
+	
+	/**
+	 * RT任务最后的检查时间
+	 */
+	public static String timeOfUpdateRT = EMPTY_STRING;
+	/**
+	 * 延时任务最后检查时间
+	 */
+	public static String timeOfUpdateDelay = EMPTY_STRING;
 
 	/** 数据库中集群信息 */
 	static Map< Integer/** clusterId */
@@ -80,6 +92,17 @@ public class GlobalInstance {
 
 	public static TaoKeeperSettings taoKeeperSettings = new TaoKeeperSettings( 0, "不应该不出我，除非数据库出问题", 2, "不应该不出我，除非数据库出问题" );
 
+	/**
+	 * 存放实时检查耗时的结果
+	 */
+	public static Map<Integer/*clusterId*/, Map<String/*serverIP*/, ZooKeeperRTInfo>> rtInfoMap = new ConcurrentHashMap<Integer, Map<String,ZooKeeperRTInfo>>();
+	
+	/**
+	 * 检查延时的结果
+	 */
+	public static Map<Integer, Map<String, ZooKeeperDelayInfo>> delayInfoMap = new ConcurrentHashMap<Integer, Map<String,ZooKeeperDelayInfo>>();
+	
+	
 	/** 设置为当前时间 */
 	public static void setGlobalInstanceTimeOfUpdateZooKeeperNode( long time ) {
 		GlobalInstance_TIME_OF_UPDATE_ZOOKEEPER_NODE = time;

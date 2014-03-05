@@ -83,7 +83,7 @@ public class ZooKeeperStatusCollectJob implements Runnable {
 										ThreadPoolManager.addJobToZKServerStatusCollectorExecutor( new ZKServerStatusCollector( ip, port, alarmSettings, zookeeperCluster, false ) );
 										isFirst = false;
 									}else{
-										ThreadPoolManager.addJobToZKServerStatusCollectorExecutor( new ZKServerStatusCollector( ip, port, alarmSettings, zookeeperCluster, true ) );
+										ThreadPoolManager.addJobToZKServerStatusCollectorExecutor( new ZKServerStatusCollector( ip, port, alarmSettings, zookeeperCluster, false ) );
 									}
 								}// for each server
 							}// for each cluster

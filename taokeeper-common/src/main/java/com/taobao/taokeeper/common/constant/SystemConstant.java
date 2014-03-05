@@ -39,6 +39,18 @@ public class SystemConstant {
 	public final static String COMMAND_WCHS = "echo wchs | nc {0} {1}";
 	public final static String COMMAND_WCHC = "echo wchc | nc {0} {1}";
 	public final static String COMMAND_RWPS = "echo rwps | nc {0} {1}";
+	
+	
+	public final static String CONS = "cons";
+	public final static String STAT = "stat";
+	public final static String WCHS = "wchs";
+	public final static String WCHC = "wchc";
+	public final static String RWPS = "rwps";
+	
+	public final static String CR = "\n";
+	
+	public final static String RN = "\r\n";
+	
 
 	public static String userNameOfSSH = "nobody";
 	public static String passwordOfSSH = "look";

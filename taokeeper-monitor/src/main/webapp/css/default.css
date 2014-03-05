@@ -69,6 +69,7 @@ a:active,a:hover {
 	margin-left: 15px;
 	padding: 0px;
 	float: left;
+	width: 85%;
 	min-width: 600px;
 	min-height: 400px;
 }

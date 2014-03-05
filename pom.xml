@@ -92,6 +92,7 @@
 		<ganymed.ssh.version>build210</ganymed.ssh.version>
 		<jsontools.version>1.7</jsontools.version>
 		<json.version>2.2</json.version>
+		<commons-net.version>3.3</commons-net.version>
 
 
 
@@ -460,6 +461,12 @@
 				<artifactId>common-toolkit</artifactId>
 				<version>${toolkit.version}</version>
 				<classifier>sources</classifier>
+			</dependency>
+			
+			<dependency>
+				<groupId>commons-net</groupId>
+				<artifactId>commons-net</artifactId>
+				<version>${commons-net.version}</version>
 			</dependency>
 
 		</dependencies>

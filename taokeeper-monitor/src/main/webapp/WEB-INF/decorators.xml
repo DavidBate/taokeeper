@@ -21,6 +21,9 @@
 		<pattern>/system.do*</pattern>
 		<pattern>/default.htm</pattern>
 		<pattern>/ruok.htm</pattern>
+		
+		<pattern>/children.do*</pattern>
+		<pattern>/content.do*</pattern>
 	</excludes>
 
 </decorators>

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
 
 import org.slf4j.Logger;
@@ -14,33 +15,26 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.taobao.taokeeper.common.GlobalInstance;
 import com.taobao.taokeeper.dao.ZooKeeperClusterDAO;
+import com.taobao.taokeeper.model.SrvrInfo;
 import com.taobao.taokeeper.model.ZooKeeperCluster;
-import com.taobao.taokeeper.model.ZooKeeperRTInfo;
+import com.taobao.taokeeper.model.ZooKeeperDelayInfo;
 import com.taobao.taokeeper.monitor.core.ThreadPoolManager;
-import com.taobao.taokeeper.monitor.core.task.runable.ZKServerRTCollector;
+import com.taobao.taokeeper.monitor.core.task.runable.ZKServerDelayCollector;
+import common.toolkit.java.constant.SymbolConstant;
 import common.toolkit.java.exception.DaoException;
 import common.toolkit.java.util.DateUtil;
 
 /**
  * 
- * @author pingwei 2014-2-25 下午10:48:03
+ * @author pingwei 2014-2-26 下午2:48:41
  */
 
-public class ZooKeeperRTCollectJob implements Runnable {
+public class ZooKeeperDelayCollectJob implements Runnable {
 
-	private static final Logger log = LoggerFactory.getLogger(ZooKeeperRTCollectJob.class);
-	static boolean running = false;
+	private static final Logger log = LoggerFactory.getLogger(ZooKeeperDelayCollectJob.class);
 
 	@Override
 	public void run() {
-		if (!GlobalInstance.need_zk_rt_collect) {
-			return;
-		}
-		if(running){
-			log.warn("ZooKeeperRTCollectJob is running");
-			return ;
-		}
-		running = true;
 		WebApplicationContext wac = ContextLoader.getCurrentWebApplicationContext();
 		ZooKeeperClusterDAO zooKeeperClusterDAO = (ZooKeeperClusterDAO) wac.getBean("zooKeeperClusterDAO");
 		try {
@@ -59,25 +53,45 @@ public class ZooKeeperRTCollectJob implements Runnable {
 				for (ZooKeeperCluster zookeeperCluster : zooKeeperClusterSet) { // 对每个cluster处理
 					if (null != zookeeperCluster && null != zookeeperCluster.getServerList()) {
 						CountDownLatch latch = new CountDownLatch(zookeeperCluster.getServerList().size());
-						Map<String, ZooKeeperRTInfo> map = new HashMap<String, ZooKeeperRTInfo>();
+						Map<String, SrvrInfo> map = new HashMap<String, SrvrInfo>();
 						for (String server : zookeeperCluster.getServerList()) {
-							ZooKeeperRTInfo rtInfo = new ZooKeeperRTInfo();
-							map.put(server, rtInfo);
-							ThreadPoolManager.zooKeeperRTCollectorExecutor.execute(new ZKServerRTCollector(server,
-									zookeeperCluster.getClusterId(), latch, rtInfo));
+							SrvrInfo info = new SrvrInfo();
+							map.put(server, info);
+							String[] tmp = server.split(SymbolConstant.COLON);
+							ThreadPoolManager.zooKeeperdelayCollectorExecutor.execute(new ZKServerDelayCollector(tmp[0],
+									Integer.parseInt(tmp[1]), info, latch));
 						}
 						latch.await();
-						GlobalInstance.rtInfoMap.put(zookeeperCluster.getClusterId(), map);
+						SrvrInfo leaderInfo = null;
+						for(Entry<String, SrvrInfo> en : map.entrySet()){
+							if("leader".equalsIgnoreCase(en.getValue().getMode())){
+								leaderInfo = en.getValue();
+								break;
+							}
+						}
+						Map<String, ZooKeeperDelayInfo> delayMap = new HashMap<String, ZooKeeperDelayInfo>();
+						for(Entry<String, SrvrInfo> en : map.entrySet()){
+							ZooKeeperDelayInfo info = new ZooKeeperDelayInfo();
+							if(en.getValue().getZxid() != null){
+								info.setInProcessTask(en.getValue().getOutstanding());
+								long leadZxid = Long.parseLong(leaderInfo.getZxid().substring(2), 16);
+								long zxid = Long.parseLong(en.getValue().getZxid().substring(2), 16);
+								info.setSyncDelay(leadZxid - zxid);
+								zxid = leadZxid & ZooKeeperDelayInfo.ZXID_MAX;
+								info.setRemainZxid(ZooKeeperDelayInfo.ZXID_MAX - zxid);
+							}
+							delayMap.put(en.getKey(), info);
+						}
+						GlobalInstance.delayInfoMap.put(zookeeperCluster.getClusterId(), delayMap);
 					}
 				}
 			}
-			GlobalInstance.timeOfUpdateRT = DateUtil.convertDate2String(new Date());
 		} catch (DaoException daoException) {
 			log.warn("Error when handle data base" + daoException.getMessage());
 		} catch (Exception e) {
 			log.error("程序出错:" + e.getMessage());
-		} finally {
-			running = false;
+		} finally{
+			GlobalInstance.timeOfUpdateDelay = DateUtil.convertDate2String(new Date());
 		}
 	}
 

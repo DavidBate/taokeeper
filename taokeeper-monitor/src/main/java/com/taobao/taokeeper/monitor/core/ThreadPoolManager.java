@@ -22,6 +22,9 @@ public class ThreadPoolManager {
 	private static int SIZE_OF_ZKSERVERPERFORMAN_CECOLLECTOR_EXECUTOR = 3;
 	private static int SIZE_OF_ZKCLUSTERCONFIG_DUMPER_EXECUTOR = 2;
 	
+	private static int SIZE_OF_ZKCLUSTER_RT_COLLECTOR_EXECUTOR = 5;
+	private static int SIZE_OF_ZKCLUSTER_DELAY_COLLECTOR_EXECUTOR = 5;
+	
 	
 	public static void init(){
 		if( null == zooKeeperNodeAliveCheckExecutor ){
@@ -34,7 +37,9 @@ public class ThreadPoolManager {
 		}
 	}
 	
+	public static ExecutorService zooKeeperRTCollectorExecutor = Executors.newFixedThreadPool(SIZE_OF_ZKCLUSTER_RT_COLLECTOR_EXECUTOR);
 	
+	public static ExecutorService zooKeeperdelayCollectorExecutor = Executors.newFixedThreadPool(SIZE_OF_ZKCLUSTER_DELAY_COLLECTOR_EXECUTOR);
 	
 	/** 节点自检 线程池 */
 	private static ExecutorService zooKeeperNodeAliveCheckExecutor;

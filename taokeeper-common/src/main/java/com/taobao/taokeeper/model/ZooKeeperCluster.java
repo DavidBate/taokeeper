@@ -23,7 +23,7 @@ public class ZooKeeperCluster {
 	/** ip:prot */
 	private List< String > serverList;
 	private String description;
-
+	
 	public int getClusterId() {
 		return clusterId;
 	}

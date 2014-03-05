@@ -78,6 +78,12 @@ public class ZooKeeperStatusController extends BaseController {
 			model.put( "timeOfUpdateZooKeeperStatusSet", GlobalInstance.timeOfUpdateZooKeeperStatusSet );
             //model.put("clusterRTStatsMap", ZooKeeperRTCollectJob.getRtStatus().get(zooKeeperCluster.getClusterId()));
             //model.put("clusterRTStats", ZooKeeperRTCollectJob.getClustRTStatus().get(zooKeeperCluster.getClusterId()));
+			model.put("rtInfoMap", GlobalInstance.rtInfoMap.get(zooKeeperCluster.getClusterId()));
+			model.put("timeOfRTUpdate", GlobalInstance.timeOfUpdateRT);
+			
+			model.put("delayInfoMap", GlobalInstance.delayInfoMap.get(zooKeeperCluster.getClusterId()));
+			model.put("timeOfUpdateDelay", GlobalInstance.timeOfUpdateDelay);
+			
 			return new ModelAndView( "monitor/zooKeeperStatusPAGE", model );
 			
 		} catch (NumberFormatException e) {
