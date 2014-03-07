@@ -1,9 +1,13 @@
 package com.taobao.taokeeper.monitor.service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.I0Itec.zkclient.ZkClient;
+import org.I0Itec.zkclient.exception.ZkMarshallingError;
+import org.I0Itec.zkclient.serialize.SerializableSerializer;
+import org.I0Itec.zkclient.serialize.ZkSerializer;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.Stat;
@@ -36,10 +40,10 @@ public class ZooKeeperClient {
 		try {
 			ZkClient client = getClient(clusterId);
 			Stat stat = new Stat();
-			byte[] bs = client.readData(path, stat);
+			String data = client.readData(path, stat);
 			NodeAttribute node = new NodeAttribute();
 			node.setStat(stat);
-			node.setData(bs == null ? null : new String(bs));
+			node.setData(data);
 			return node;
 		} catch (Exception e) {
 			return null;
@@ -52,7 +56,7 @@ public class ZooKeeperClient {
 			if(client.exists(path)){
 				return ;
 			}
-			client.create(path, data.getBytes("UTF-8"), ZooDefs.Ids.OPEN_ACL_UNSAFE, persistent ? CreateMode.PERSISTENT
+			client.create(path, data, ZooDefs.Ids.OPEN_ACL_UNSAFE, persistent ? CreateMode.PERSISTENT
 					: CreateMode.EPHEMERAL);
 		} catch (Exception e) {
 			return;
@@ -90,6 +94,7 @@ public class ZooKeeperClient {
 				return null;
 			}
 			client = new ZkClient(servers, 10 * 1000);
+			client.setZkSerializer(new TaoKeeperSerializer());
 			ZkClient tmpClient = clientMap.putIfAbsent(clusterId, client);
 			if(tmpClient == null){
 				return client;
@@ -98,6 +103,27 @@ public class ZooKeeperClient {
 			return tmpClient;
 		}
 		return client;
+	}
+	
+	static class TaoKeeperSerializer extends SerializableSerializer{
+		@Override
+		public byte[] serialize(Object serializable) throws ZkMarshallingError {
+			String s = serializable.toString();
+			try {
+				return s.getBytes("UTF-8");
+			} catch (UnsupportedEncodingException e) {
+			}
+			return null;
+		}
+		
+		@Override
+		public Object deserialize(byte[] bytes) throws ZkMarshallingError {
+			try {
+				return new String(bytes, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+			}
+			return null;
+		}
 	}
 
 	static String list2String(List<String> list) {
