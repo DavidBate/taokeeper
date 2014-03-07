@@ -2,13 +2,10 @@ package com.taobao.taokeeper.monitor.service;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
 
+import org.I0Itec.zkclient.ZkClient;
 import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
@@ -24,12 +21,12 @@ import com.taobao.taokeeper.model.ZooKeeperCluster;
 
 public class ZooKeeperClient {
 
-	public static ConcurrentHashMap<Integer/* clusterId */, ZooKeeper> clientMap = new ConcurrentHashMap<Integer, ZooKeeper>();
+	public static ConcurrentHashMap<Integer/* clusterId */, ZkClient> clientMap = new ConcurrentHashMap<Integer, ZkClient>();
 
 	public static List<String> getChildren(int clusterId, String path) {
 		try {
-			ZooKeeper client = getClient(clusterId);
-			return client.getChildren(path, false);
+			ZkClient client = getClient(clusterId);
+			return client.getChildren(path);
 		} catch (Exception e) {
 			return null;
 		}
@@ -37,9 +34,9 @@ public class ZooKeeperClient {
 
 	public static NodeAttribute getNode(int clusterId, String path) {
 		try {
-			ZooKeeper client = getClient(clusterId);
+			ZkClient client = getClient(clusterId);
 			Stat stat = new Stat();
-			byte[] bs = client.getData(path, false, stat);
+			byte[] bs = client.readData(path, stat);
 			NodeAttribute node = new NodeAttribute();
 			node.setStat(stat);
 			node.setData(bs == null ? null : new String(bs));
@@ -51,8 +48,8 @@ public class ZooKeeperClient {
 
 	public static void create(int clusterId, String path, String data, boolean persistent) {
 		try {
-			ZooKeeper client = getClient(clusterId);
-			if(client.exists(path, false) != null){
+			ZkClient client = getClient(clusterId);
+			if(client.exists(path)){
 				return ;
 			}
 			client.create(path, data.getBytes("UTF-8"), ZooDefs.Ids.OPEN_ACL_UNSAFE, persistent ? CreateMode.PERSISTENT
@@ -64,24 +61,23 @@ public class ZooKeeperClient {
 
 	public static void delete(int clusterId, String path) {
 		try {
-			ZooKeeper client = getClient(clusterId);
-			client.delete(path, -1);
+			ZkClient client = getClient(clusterId);
+			client.delete(path);
 		} catch (Exception e) {
 			return;
 		}
 	}
 	
-	public static Stat setData(int cid, String path, int version, String data){
+	public static void setData(int cid, String path, int version, String data){
 		try {
-			ZooKeeper client = getClient(cid);
-			return client.setData(path, data.getBytes("UTF-8"), version);
+			ZkClient client = getClient(cid);
+			client.writeData(path, data);
 		} catch (Exception e) {
-			return null;
 		}
 	}
 
-	static ZooKeeper getClient(int clusterId) throws Exception {
-		ZooKeeper client = clientMap.get(clusterId);
+	static ZkClient getClient(int clusterId) throws Exception {
+		ZkClient client = clientMap.get(clusterId);
 		if (client == null) {
 			WebApplicationContext wac = ContextLoader.getCurrentWebApplicationContext();
 			ZooKeeperClusterDAO zooKeeperClusterDAO = (ZooKeeperClusterDAO) wac.getBean("zooKeeperClusterDAO");
@@ -93,20 +89,13 @@ public class ZooKeeperClient {
 			if (servers == null) {
 				return null;
 			}
-			final CountDownLatch l = new CountDownLatch(1);
-			client = new ZooKeeper(servers, 10 * 1000, new Watcher() {
-				@Override
-				public void process(WatchedEvent event) {
-					l.countDown();
-				}
-			});
-			l.await();
-			ZooKeeper tmpClient = clientMap.putIfAbsent(clusterId, client);
-			return tmpClient == null ? client : tmpClient;
-		}
-		if(!client.getState().isConnected()){
+			client = new ZkClient(servers, 10 * 1000);
+			ZkClient tmpClient = clientMap.putIfAbsent(clusterId, client);
+			if(tmpClient == null){
+				return client;
+			}
 			client.close();
-			return getClient(clusterId);
+			return tmpClient;
 		}
 		return client;
 	}

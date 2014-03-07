@@ -23,7 +23,7 @@ import com.taobao.taokeeper.monitor.service.ZooKeeperClient;
 public class EditController extends BaseController {
 
 	@RequestMapping
-	public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String path = request.getParameter("path");
 		String cid = StringUtils.defaultIfBlank(request.getParameter("clusterId"), "1");
 		String version = StringUtils.defaultIfBlank(request.getParameter("version"), "");

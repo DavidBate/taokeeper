@@ -3,8 +3,8 @@ package com.taobao.taokeeper.monitor.core.task.runable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.I0Itec.zkclient.ZkClient;
 import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
@@ -39,19 +39,15 @@ public class ZKServerRTCollector implements Runnable {
 
 	@Override
 	public void run() {
-		ZooKeeper zkClient = null;
+		ZkClient zkClient = null;
 		String[] tmp = server.split(":");
 		try {
 			if(!ZKDataUtil.ruok(tmp[0], Integer.parseInt(tmp[1]))){
 				return ;
 			}
-			CountDownLatch connectSignal = new CountDownLatch(1);
 			long st = System.currentTimeMillis();
-			zkClient = new ZooKeeper(server, 5000, new DefaultWatcher(connectSignal));
-			connectSignal.await(10, TimeUnit.SECONDS);
-			if(!zkClient.getState().isConnected()){
-				return ;
-			}
+			zkClient = new ZkClient(server, 5000);
+			zkClient.waitUntilConnected(5000, TimeUnit.SECONDS);
 			long rt = System.currentTimeMillis() - st;
 			rtInfo.setCreateSession(rt);
 			final int cnt = 3;
@@ -60,7 +56,7 @@ public class ZKServerRTCollector implements Runnable {
 				try {
 					zkClient.create("/qiaoyi.dingqy" + i, "rtMonitor".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
 							CreateMode.EPHEMERAL);
-				} catch (KeeperException e) {
+				} catch (Exception e) {
 				}
 			}
 			rt = System.currentTimeMillis() - st;
@@ -68,8 +64,8 @@ public class ZKServerRTCollector implements Runnable {
 			st = System.currentTimeMillis();
 			for (int i = 0; i < cnt; i++) {
 				try {
-					zkClient.exists("/qiaoyi.dingqy" + i, false);
-				} catch (KeeperException e) {
+					zkClient.exists("/qiaoyi.dingqy" + i);
+				} catch (Exception e) {
 				}
 			}
 			rt = System.currentTimeMillis() - st;
@@ -77,8 +73,8 @@ public class ZKServerRTCollector implements Runnable {
 			st = System.currentTimeMillis();
 			for (int i = 0; i < cnt; i++) {
 				try {
-					zkClient.setData("/qiaoyi.dingqy" + i, "rtMonitor".getBytes(), -1);
-				} catch (KeeperException e) {
+					zkClient.writeData("/qiaoyi.dingqy" + i, "rtMonitor".getBytes());
+				} catch (Exception e) {
 				}
 			}
 			rt = System.currentTimeMillis() - st;
@@ -86,8 +82,8 @@ public class ZKServerRTCollector implements Runnable {
 			st = System.currentTimeMillis();
 			for (int i = 0; i < cnt; i++) {
 				try {
-					zkClient.getData("/qiaoyi.dingqy" + i, false, null);
-				} catch (KeeperException e) {
+					zkClient.readData("/qiaoyi.dingqy" + i);
+				} catch (Exception e) {
 				}
 			}
 			rt = System.currentTimeMillis() - st;
@@ -95,8 +91,8 @@ public class ZKServerRTCollector implements Runnable {
 			st = System.currentTimeMillis();
 			for (int i = 0; i < cnt; i++) {
 				try {
-					zkClient.delete("/qiaoyi.dingqy" + i, -1);
-				} catch (KeeperException e) {
+					zkClient.delete("/qiaoyi.dingqy" + i);
+				} catch (Exception e) {
 				}
 			}
 			rt = System.currentTimeMillis() - st;
@@ -104,8 +100,8 @@ public class ZKServerRTCollector implements Runnable {
 			st = System.currentTimeMillis();
 			for (int i = 0; i < cnt; i++) {
 				try {
-					zkClient.getChildren("/qiaoyi.dingqy" + i, false);
-				} catch (KeeperException e) {
+					zkClient.getChildren("/qiaoyi.dingqy" + i);
+				} catch (Exception e) {
 				}
 			}
 			rt = System.currentTimeMillis() - st;
@@ -117,14 +113,14 @@ public class ZKServerRTCollector implements Runnable {
 				if(zkClient != null){
 					zkClient.close();
 				}
-			} catch (InterruptedException e) {
+			} catch (Exception e) {
 				log.error("close zkclient error, " + e.getMessage(), e.getCause());
 			}
 			latch.countDown();
 		}
 	}
 
-	private class DefaultWatcher implements Watcher {
+	static class DefaultWatcher implements Watcher {
 
 		CountDownLatch connectSignal = null;
 
@@ -138,6 +134,14 @@ public class ZKServerRTCollector implements Runnable {
 				connectSignal.countDown();
 			}
 		}
+	}
+	
+	public static void main(String[] args) throws Exception{
+		CountDownLatch l = new CountDownLatch(1);
+		ZooKeeper zk = new ZooKeeper("10.125.192.53:2181", 30*1000, new DefaultWatcher(l));
+		l.await();
+		System.out.println(zk.getData("/pingwei", null, null));
+		zk.close();
 	}
 
 }

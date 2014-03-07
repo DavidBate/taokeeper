@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.net.telnet.TelnetClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoader;
@@ -125,8 +126,43 @@ public class ZKServerStatusCollector implements Runnable {
 			LOG.error(e.getMessage(), e.getCause());
 		}
 	}
+	
+	
+	static String execCmdByTelnet(String ip, int port, String cmd){
+		TelnetClient tc = new TelnetClient();
+		PrintStream out = null;
+		InputStream in = null;
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		try {
+			tc.connect(ip, port);
+			in = tc.getInputStream();
+			out = new PrintStream(tc.getOutputStream());
+			out.println(cmd);
+			out.flush();
+			byte[] buf = new byte[10224*1024];
+			int len = -1;
+			while((len = in.read(buf)) >= 0){
+				bos.write(buf, 0, len);
+			}
+			return new String(bos.toByteArray());
+		} catch (Exception e) {
+			LOG.error("exec command :" + cmd + " failed ." + e.getMessage(), e.getCause());
+			return new String(bos.toByteArray());
+		} finally {
+			try {
+				tc.disconnect();
+				if (in != null) {
+					in.close();
+				}
+				if (out != null) {
+					out.close();
+				}
+			} catch (Exception e) {
+			}
+		}
+	}
 
-	static String execCmdBySockset(String ip, int port , String cmd){
+	static String execCmdBySockset1(String ip, int port , String cmd){
 		Socket so = null;
 		PrintStream out = null;
 		InputStream in = null;
@@ -185,7 +221,7 @@ public class ZKServerStatusCollector implements Runnable {
 
 		BufferedReader bufferedRead = null;
 		StringBuffer sb = new StringBuffer();
-		String content = execCmdBySockset(ip, port, STAT);
+		String content = execCmdByTelnet(ip, port, STAT);
 		try {
 			if (StringUtils.isEmpty(content)) {
 				LOG.warn("No output of " + StringUtil.replaceSequenced(STAT, ip, port + EMPTY_STRING));
@@ -258,7 +294,7 @@ public class ZKServerStatusCollector implements Runnable {
 				LOG.warn("Ip is empty");
 				return;
 			}
-			String wchsOutput = execCmdBySockset(ip, port, WCHS);
+			String wchsOutput = execCmdByTelnet(ip, port, WCHS);
 
 			/**
 			 * Example: 59 connections watching 161 paths Total watches:405
@@ -310,7 +346,7 @@ public class ZKServerStatusCollector implements Runnable {
 				LOG.warn("Ip is empty");
 				return;
 			}
-			String wchcOutput = execCmdBySockset(ip, port, WCHC);
+			String wchcOutput = execCmdByTelnet(ip, port, WCHC);
 
 			/**
 			 * Example: 59 connections watching 161 paths Total watches:405
@@ -378,7 +414,7 @@ public class ZKServerStatusCollector implements Runnable {
 				LOG.warn("Ip is empty");
 				return;
 			}
-			String rwpsOutput = execCmdBySockset(ip, port, RWPS);
+			String rwpsOutput = execCmdByTelnet(ip, port, RWPS);
 
 			/**
 			 * RealTime R/W Statistics: getChildren2: 0.0
