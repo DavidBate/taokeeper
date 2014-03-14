@@ -19,8 +19,8 @@ public class SchedulerManager {
 	public static ScheduledExecutorService delayScheduler = Executors.newScheduledThreadPool(1);
 	
 	public static void init(){
-		rtScheduler.scheduleWithFixedDelay(new ZooKeeperRTCollectJob(), 10, 10, TimeUnit.SECONDS);
-		delayScheduler.scheduleWithFixedDelay(new ZooKeeperDelayCollectJob(), 10, 10, TimeUnit.SECONDS);
+		rtScheduler.scheduleWithFixedDelay(new ZooKeeperRTCollectJob(), 30, 30, TimeUnit.SECONDS);
+		delayScheduler.scheduleWithFixedDelay(new ZooKeeperDelayCollectJob(), 30, 30, TimeUnit.SECONDS);
 	}
 }
 

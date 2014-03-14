@@ -28,4 +28,12 @@ public class TreeController extends BaseController {
 		return new ModelAndView("monitor/tree", model);
 	}
 	
+	@RequestMapping(params="search=1")
+	public ModelAndView search(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("clusterId", StringUtils.defaultIfBlank(request.getParameter("clusterId"), "1"));
+		model.put("path", StringUtils.defaultIfBlank(request.getParameter("path"), "/"));
+		model.put("search", "1");
+		return new ModelAndView("monitor/tree", model);
+	}
 }

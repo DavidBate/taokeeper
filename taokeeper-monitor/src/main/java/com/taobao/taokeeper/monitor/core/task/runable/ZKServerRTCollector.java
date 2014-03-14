@@ -5,10 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.I0Itec.zkclient.ZkClient;
 import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,30 +115,6 @@ public class ZKServerRTCollector implements Runnable {
 			}
 			latch.countDown();
 		}
-	}
-
-	static class DefaultWatcher implements Watcher {
-
-		CountDownLatch connectSignal = null;
-
-		private DefaultWatcher(CountDownLatch connectSignal) {
-			this.connectSignal = connectSignal;
-		}
-
-		@Override
-		public void process(WatchedEvent event) {
-			if (event.getType() == Event.EventType.None && event.getState() == Event.KeeperState.SyncConnected && connectSignal != null) {
-				connectSignal.countDown();
-			}
-		}
-	}
-	
-	public static void main(String[] args) throws Exception{
-		CountDownLatch l = new CountDownLatch(1);
-		ZooKeeper zk = new ZooKeeper("10.125.192.53:2181", 30*1000, new DefaultWatcher(l));
-		l.await();
-		System.out.println(zk.getData("/pingwei", null, null));
-		zk.close();
 	}
 
 }

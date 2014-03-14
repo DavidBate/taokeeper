@@ -4,11 +4,9 @@ import static com.taobao.taokeeper.common.constant.SystemConstant.CR;
 import static com.taobao.taokeeper.common.constant.SystemConstant.RN;
 import static com.taobao.taokeeper.common.constant.SystemConstant.RWPS;
 import static com.taobao.taokeeper.common.constant.SystemConstant.STAT;
-import static com.taobao.taokeeper.common.constant.SystemConstant.WCHC;
 import static com.taobao.taokeeper.common.constant.SystemConstant.WCHS;
 import static common.toolkit.java.constant.BaseConstant.WORD_SEPARATOR;
 import static common.toolkit.java.constant.EmptyObjectConstant.EMPTY_STRING;
-import static common.toolkit.java.constant.HtmlTagConstant.BR;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -19,7 +17,6 @@ import java.io.StringReader;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -110,7 +107,7 @@ public class ZKServerStatusCollector implements Runnable {
 			ZooKeeperStatusV2 zooKeeperStatus = new ZooKeeperStatusV2();
 			sshZooKeeperAndHandleStat(ip, Integer.parseInt(port), zooKeeperStatus);
 			telnetZooKeeperAndHandleWchs(ip, Integer.parseInt(port), zooKeeperStatus);
-			sshZooKeeperAndHandleWchc(ip, Integer.parseInt(port), zooKeeperStatus, zookeeperCluster.getClusterId());
+//			sshZooKeeperAndHandleWchc(ip, Integer.parseInt(port), zooKeeperStatus, zookeeperCluster.getClusterId());
 			sshZooKeeperAndHandleRwps(ip, Integer.parseInt(port), (ZooKeeperStatusV2) zooKeeperStatus,
 					zookeeperCluster.getClusterId());
 			checkAndAlarm(alarmSettings, zooKeeperStatus, zookeeperCluster.getClusterName());
@@ -128,7 +125,7 @@ public class ZKServerStatusCollector implements Runnable {
 	}
 	
 	
-	static String execCmdByTelnet(String ip, int port, String cmd){
+	static String execCmdByTelnet1(String ip, int port, String cmd){
 		TelnetClient tc = new TelnetClient();
 		PrintStream out = null;
 		InputStream in = null;
@@ -162,7 +159,7 @@ public class ZKServerStatusCollector implements Runnable {
 		}
 	}
 
-	static String execCmdBySockset1(String ip, int port , String cmd){
+	public static String execCmdBySockset(String ip, int port , String cmd){
 		Socket so = null;
 		PrintStream out = null;
 		InputStream in = null;
@@ -221,7 +218,7 @@ public class ZKServerStatusCollector implements Runnable {
 
 		BufferedReader bufferedRead = null;
 		StringBuffer sb = new StringBuffer();
-		String content = execCmdByTelnet(ip, port, STAT);
+		String content = execCmdBySockset(ip, port, STAT);
 		try {
 			if (StringUtils.isEmpty(content)) {
 				LOG.warn("No output of " + StringUtil.replaceSequenced(STAT, ip, port + EMPTY_STRING));
@@ -294,7 +291,7 @@ public class ZKServerStatusCollector implements Runnable {
 				LOG.warn("Ip is empty");
 				return;
 			}
-			String wchsOutput = execCmdByTelnet(ip, port, WCHS);
+			String wchsOutput = execCmdBySockset(ip, port, WCHS);
 
 			/**
 			 * Example: 59 connections watching 161 paths Total watches:405
@@ -334,73 +331,73 @@ public class ZKServerStatusCollector implements Runnable {
 	 * 
 	 * @throws Exception
 	 */
-	private void sshZooKeeperAndHandleWchc(String ip, int port, ZooKeeperStatus zooKeeperStatus, int clusterId) {
-
-		Map<String, Connection> connectionMapOfCluster = GlobalInstance
-				.getZooKeeperClientConnectionMapByClusterId(clusterId);
-		if (null == connectionMapOfCluster)
-			connectionMapOfCluster = new HashMap<String, Connection>();
-
-		try {
-			if (StringUtil.isBlank(ip, port + EMPTY_STRING)) {
-				LOG.warn("Ip is empty");
-				return;
-			}
-			String wchcOutput = execCmdByTelnet(ip, port, WCHC);
-
-			/**
-			 * Example: 59 connections watching 161 paths Total watches:405
-			 */
-			if (StringUtil.isBlank(wchcOutput)) {
-				LOG.warn("No output execute " + StringUtil.replaceSequenced(WCHC, ip, port + EMPTY_STRING));
-				return;
-			}
-
-			StringBuffer wchcOutputWithIp = new StringBuffer();
-			String[] wchcOutputArray = split(wchcOutput);
-			if (0 == wchcOutputArray.length) {
-				LOG.warn("No output of command " + StringUtil.replaceSequenced(WCHC, ip, port + EMPTY_STRING));
-				return;
-			}
-			Map<String, List<String>> watchedPathMap = new HashMap<String, List<String>>();
-			String sessionId = EMPTY_STRING;
-			List<String> watchedPathList = new ArrayList<String>();
-
-			for (String line : wchcOutputArray) {
-				if (StringUtil.isBlank(line)) {
-					wchcOutputWithIp.append(line).append(BR);
-					continue;
-				} else if (line.startsWith("0x")) {
-					// 将上次list放入
-					if (!StringUtil.isBlank(sessionId)) {
-						watchedPathMap.put(sessionId, watchedPathList);
-					}
-
-					sessionId = StringUtil.trimToEmpty(line);
-					Connection conn = connectionMapOfCluster.get(sessionId);
-					if (null != conn)
-						sessionId += conn.getClientIp();
-					wchcOutputWithIp.append(sessionId).append(BR);
-				} else {
-					watchedPathList.add(StringUtil.trimToEmpty(line));
-					wchcOutputWithIp.append(line).append(BR);
-				}
-			}// 遍历wchc返回的内容
-				// 将最后一次list放入
-			if (!StringUtil.isBlank(sessionId)) {
-				Connection conn = connectionMapOfCluster.get(sessionId);
-				if (null != conn)
-					sessionId += "-" + conn.getClientIp();
-				watchedPathMap.put(sessionId, watchedPathList);
-			}
-			LOG.debug(ip + " 的所有Watch情况是:" + watchedPathMap.keySet());
-			zooKeeperStatus.setWatchedPathMap(watchedPathMap);
-			zooKeeperStatus.setWatchedPathMapContent(wchcOutputWithIp.toString());
-		} catch (Exception e) {
-			LOG.error("程序错误: " + e.getMessage());
-			e.printStackTrace();
-		}
-	}
+//	private void sshZooKeeperAndHandleWchc(String ip, int port, ZooKeeperStatus zooKeeperStatus, int clusterId) {
+//
+//		Map<String, Connection> connectionMapOfCluster = GlobalInstance
+//				.getZooKeeperClientConnectionMapByClusterId(clusterId);
+//		if (null == connectionMapOfCluster)
+//			connectionMapOfCluster = new HashMap<String, Connection>();
+//
+//		try {
+//			if (StringUtil.isBlank(ip, port + EMPTY_STRING)) {
+//				LOG.warn("Ip is empty");
+//				return;
+//			}
+//			String wchcOutput = execCmdBySockset(ip, port, WCHC);
+//
+//			/**
+//			 * Example: 59 connections watching 161 paths Total watches:405
+//			 */
+//			if (StringUtil.isBlank(wchcOutput)) {
+//				LOG.warn("No output execute " + StringUtil.replaceSequenced(WCHC, ip, port + EMPTY_STRING));
+//				return;
+//			}
+//
+//			StringBuffer wchcOutputWithIp = new StringBuffer();
+//			String[] wchcOutputArray = split(wchcOutput);
+//			if (0 == wchcOutputArray.length) {
+//				LOG.warn("No output of command " + StringUtil.replaceSequenced(WCHC, ip, port + EMPTY_STRING));
+//				return;
+//			}
+//			Map<String, List<String>> watchedPathMap = new HashMap<String, List<String>>();
+//			String sessionId = EMPTY_STRING;
+//			List<String> watchedPathList = new ArrayList<String>();
+//
+//			for (String line : wchcOutputArray) {
+//				if (StringUtil.isBlank(line)) {
+//					wchcOutputWithIp.append(line).append(BR);
+//					continue;
+//				} else if (line.startsWith("0x")) {
+//					// 将上次list放入
+//					if (!StringUtil.isBlank(sessionId)) {
+//						watchedPathMap.put(sessionId, watchedPathList);
+//					}
+//
+//					sessionId = StringUtil.trimToEmpty(line);
+//					Connection conn = connectionMapOfCluster.get(sessionId);
+//					if (null != conn)
+//						sessionId += conn.getClientIp();
+//					wchcOutputWithIp.append(sessionId).append(BR);
+//				} else {
+//					watchedPathList.add(StringUtil.trimToEmpty(line));
+//					wchcOutputWithIp.append(line).append(BR);
+//				}
+//			}// 遍历wchc返回的内容
+//				// 将最后一次list放入
+//			if (!StringUtil.isBlank(sessionId)) {
+//				Connection conn = connectionMapOfCluster.get(sessionId);
+//				if (null != conn)
+//					sessionId += "-" + conn.getClientIp();
+//				watchedPathMap.put(sessionId, watchedPathList);
+//			}
+//			LOG.debug(ip + " 的所有Watch情况是:" + watchedPathMap.keySet());
+//			zooKeeperStatus.setWatchedPathMap(watchedPathMap);
+//			zooKeeperStatus.setWatchedPathMapContent(wchcOutputWithIp.toString());
+//		} catch (Exception e) {
+//			LOG.error("程序错误: " + e.getMessage());
+//			e.printStackTrace();
+//		}
+//	}
 
 	/**
 	 * 进行Telnet连接并进行执行rwps。
@@ -414,7 +411,7 @@ public class ZKServerStatusCollector implements Runnable {
 				LOG.warn("Ip is empty");
 				return;
 			}
-			String rwpsOutput = execCmdByTelnet(ip, port, RWPS);
+			String rwpsOutput = execCmdBySockset(ip, port, RWPS);
 
 			/**
 			 * RealTime R/W Statistics: getChildren2: 0.0

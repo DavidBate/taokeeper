@@ -30,6 +30,13 @@
              callback : {
                  beforedata : function(node,tree_obj){
                         var rootPath= '${path}';
+                        $.ajax({
+                        	type: 'get',
+                        	url: 'content.do?clusterId=${clusterId}&path=${path}',
+                        	success : function (result){
+                        		$("#content").html(result);
+                        	}
+                         });
                         return {path :  $(node).attr("path") || rootPath,rel : $(node).attr("rel")};
                 },
                 onselect : function(node,tree_obj){

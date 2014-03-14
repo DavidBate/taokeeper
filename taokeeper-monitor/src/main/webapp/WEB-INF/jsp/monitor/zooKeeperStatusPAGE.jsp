@@ -47,8 +47,6 @@ a:visited {
 	text-decoration: none
 }
 </style>
-<script src="http://code.highcharts.com/highcharts.js"></script>
-<script src="http://code.highcharts.com/modules/exporting.js"></script>
 
 
 
@@ -88,7 +86,6 @@ a:visited {
 			<td><b>数据量 Sent/Received</b></td>
 			<td><b>状态</b></td>
 			<td><b>节点自检状态</b></td>
-			<td><b>查看趋势</b></td>
 		</tr>
 
 		<c:forEach var="zooKeeperStatus" items="${zooKeeperStatusMap}">
@@ -98,9 +95,7 @@ a:visited {
 				<td>${fn:length( zooKeeperStatus.value.connections )}<img
 					style="cursor: pointer;" src="img/seeDetail.png"
 					onclick="openDialog('<pre>${zooKeeperStatus.value.connectionsContent}</pre>')" /></td>
-				<td>${ zooKeeperStatus.value.watches }<img
-					style="cursor: pointer;" src="img/seeDetail.png"
-					onclick="openDialog('<pre>${zooKeeperStatus.value.watchedPathMapContent}</pre>')" /></td>
+				<td>${ zooKeeperStatus.value.watches }</td>
 				<td>${ zooKeeperStatus.value.watchedPaths }/${
 					zooKeeperStatus.value.nodeCount }</td>
 				<td>${ zooKeeperStatus.value.sent }/${
@@ -122,9 +117,6 @@ a:visited {
 						<td style="background-color: red;">ERROR</td>
 					</c:otherwise>
 				</c:choose>
-				<td>&nbsp;&nbsp;&nbsp;&nbsp;<a
-					href="report.do?method=reportPAGE&clusterId=${clusterId}&server=${ zooKeeperStatus.key }"><img
-						style="cursor: pointer;" src="img/seeDetail.png" /></a></td>
 			</tr>
 		</c:forEach>
 	</table>
@@ -277,78 +269,6 @@ a:visited {
 </SCRIPT>
 
 
-<script>
-	window.onload = function() {
-
-		// Radialize the colors
-		Highcharts.getOptions().colors = Highcharts.map(
-				Highcharts.getOptions().colors, function(color) {
-					return {
-						radialGradient : {
-							cx : 0.5,
-							cy : 0.3,
-							r : 0.7
-						},
-						stops : [
-								[ 0, color ],
-								[
-										1,
-										Highcharts.Color(color).brighten(-0.3)
-												.get('rgb') ] // darken
-						]
-					};
-				});
-
-		// Build the chart
-		jQuery('#container')
-				.highcharts(
-						{
-							chart : {
-								plotBackgroundColor : null,
-								plotBorderWidth : null,
-								plotShadow : false
-							},
-							title : {
-								text : 'Browser market shares at a specific website, 2010'
-							},
-							tooltip : {
-								pointFormat : '{series.name}: <b>{point.percentage:.1f}%</b>'
-							},
-							plotOptions : {
-								pie : {
-									allowPointSelect : true,
-									cursor : 'pointer',
-									dataLabels : {
-										enabled : true,
-										color : '#000000',
-										connectorColor : '#000000',
-										formatter : function() {
-											return '<b>'
-													+ this.point.name
-													+ '</b>: '
-													+ Math
-															.round(this.percentage)
-													+ ' %';
-										}
-									}
-								}
-							},
-							series : [ {
-								type : 'pie',
-								name : 'Browser share',
-								data : [ [ 'Firefox', 145.0 ], [ 'IE', 26.8 ],
-										{
-											name : 'Chrome',
-											y : 12.8,
-											sliced : true,
-											selected : true
-										}, [ 'Safari', 48.5 ],
-										[ 'Opera', 6.2 ], [ 'Others', 140.7 ] ]
-							} ]
-						});
-
-	}
-</script>
 
 
 

@@ -27,6 +27,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.taobao.taokeeper.common.GlobalInstance;
 import com.taobao.taokeeper.common.constant.SystemConstant;
+import com.taobao.taokeeper.common.util.ZKDataUtil;
 import com.taobao.taokeeper.dao.ZooKeeperClusterDAO;
 import com.taobao.taokeeper.model.ZooKeeperCluster;
 import com.taobao.taokeeper.monitor.core.Initialization;
@@ -125,7 +126,8 @@ public class ClientThroughputStatJob implements Runnable {
 			
 			Map< String, Connection > connectionMapOfServer = new HashMap< String, Connection >();
 			try {
-				String consOutput = SSHUtil.execute( ip, SystemConstant.portOfSSH, userNameOfSSH, passwordOfSSH, StringUtil.replaceSequenced( COMMAND_CONS, ip, port ) );
+//				String consOutput = SSHUtil.execute( ip, SystemConstant.portOfSSH, userNameOfSSH, passwordOfSSH, StringUtil.replaceSequenced( COMMAND_CONS, ip, port ) );
+				String consOutput = ZKDataUtil.execCmdBySockset(ip, Integer.parseInt(port), SystemConstant.CONS);
 
 				/**
 				 * Example: /10.232.38.158:50097[0](queued=0,recved=1,sent=0)
@@ -145,7 +147,7 @@ public class ClientThroughputStatJob implements Runnable {
 					continue;
 				}
 
-				String[] consOutputArray = consOutput.split( BR );
+				String[] consOutputArray = consOutput.split( "\n" );
 				if ( 0 == consOutputArray.length ) {
 					LOG.warn( "No output of command " + COMMAND_CONS + " on ip: " + ip + ", port: " + port );
 					return;
@@ -173,8 +175,6 @@ public class ClientThroughputStatJob implements Runnable {
 					}
 
 				}// 处理 cons 的内容
-			} catch ( SSHException e ) {
-				LOG.warn( "Error when sshZooKeeperAndHandleWchc:[ip:" + ip + ", port:" + port + " ] " + e.getMessage() );
 			} catch ( Exception e ) {
 				LOG.error( "程序错误: " + e.getMessage() );
 				e.printStackTrace();
