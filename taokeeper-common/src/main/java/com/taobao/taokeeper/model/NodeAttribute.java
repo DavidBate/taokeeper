@@ -1,5 +1,7 @@
 package com.taobao.taokeeper.model;
 
+import java.util.Date;
+
 import org.apache.zookeeper.data.Stat;
 
 /**
@@ -26,7 +28,12 @@ public class NodeAttribute {
 	public void setStat(Stat stat) {
 		this.stat = stat;
 	}
-	
+	public String getCtime(){
+		return new Date(stat.getCtime()).toString();
+	}
+	public String getMtime(){
+		return new Date(stat.getMtime()).toString();
+	}
 }
 
 

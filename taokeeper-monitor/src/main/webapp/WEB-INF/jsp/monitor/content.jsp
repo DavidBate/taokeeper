@@ -85,12 +85,12 @@ var editing=false;
 
 		<tr>
 			<td>ctime</td>
-			<td>${node.stat.ctime }</td>
+			<td>${node.ctime }</td>
 		</tr>
 
 		<tr>
 			<td>mtime</td>
-			<td>${node.stat.mtime }</td>
+			<td>${node.mtime }</td>
 		</tr>
 
 		<tr>
