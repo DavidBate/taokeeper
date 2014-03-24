@@ -7,15 +7,15 @@ package com.taobao.taokeeper.model;
 
 public class ZooKeeperDelayInfo {
 	public static final long ZXID_MAX = 0xffffffffL;
-	long syncDelay = -1;
+//	long syncDelay = -1;
 	long inProcessTask = -1;
 	long remainZxid = -1;
-	public long getSyncDelay() {
-		return syncDelay;
-	}
-	public void setSyncDelay(long syncDelay) {
-		this.syncDelay = syncDelay;
-	}
+//	public long getSyncDelay() {
+//		return syncDelay;
+//	}
+//	public void setSyncDelay(long syncDelay) {
+//		this.syncDelay = syncDelay;
+//	}
 	public long getInProcessTask() {
 		return inProcessTask;
 	}

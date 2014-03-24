@@ -39,6 +39,7 @@ public class ZKDataUtil {
 	}
 	
 	
+	
 	/**
 	 * 通过socket连接发送命令，获取输出结果
 	 * @param ip
@@ -64,13 +65,13 @@ public class ZKDataUtil {
 					byteOut.write(bs, 0, len);
 				}
 			} catch (Exception e) {
-				LOG.error("exec command :" + cmd + " failed ." + e.getMessage(), e.getCause());
+				LOG.error("exec command failed :" + ip + ":" + port + "\t" + cmd + ". "+ e.getMessage(), e.getCause());
 			}
 			return new String(byteOut.toByteArray());
 		} catch (UnknownHostException e) {
-			LOG.error("exec command :" + cmd + " failed ." + e.getMessage(), e.getCause());
+			LOG.error("exec command failed :" + ip + ":" + port + "\t" + cmd + ". "+ e.getMessage(), e.getCause());
 		} catch (IOException e) {
-			LOG.error("exec command :" + cmd + " failed ." + e.getMessage(), e.getCause());
+			LOG.error("exec command failed :" + ip + ":" + port + "\t" + cmd + ". "+ e.getMessage(), e.getCause());
 		} finally {
 			try {
 				if(out != null){
@@ -88,6 +89,7 @@ public class ZKDataUtil {
 		}
 		return "";
 	}
+	
 }
 
 

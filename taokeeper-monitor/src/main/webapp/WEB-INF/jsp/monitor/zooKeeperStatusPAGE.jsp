@@ -92,9 +92,9 @@ a:visited {
 			<tr>
 				<td>${ zooKeeperStatus.key }</td>
 				<td>${ zooKeeperStatus.value.mode }</td>
-				<td>${fn:length( zooKeeperStatus.value.connections )}<img
+				<td>${fn:length( zooKeeperStatus.value.clientConnectionList )}<img
 					style="cursor: pointer;" src="img/seeDetail.png"
-					onclick="openDialog('<pre>${zooKeeperStatus.value.connectionsContent}</pre>')" /></td>
+					onclick="openDialog('<pre>${zooKeeperStatus.value.statContent}</pre>')" /></td>
 				<td>${ zooKeeperStatus.value.watches }</td>
 				<td>${ zooKeeperStatus.value.watchedPaths }/${
 					zooKeeperStatus.value.nodeCount }</td>
@@ -139,7 +139,6 @@ a:visited {
 <table border="0" cellspacing="0" cellpadding="0" style="">
 	<tr>
 		<th>服务器</th>
-		<th>事务同步延时</th>
 		<th>内存任务堆积</th>
 		<th>剩余可用事务ID</th>
 	</tr>
@@ -147,7 +146,6 @@ a:visited {
 	<c:forEach var="delayInfo" items="${delayInfoMap}">
 		<tr>
 			<td>${ delayInfo.key }</td>
-			<td>${delayInfo.value.syncDelay }</td>
 			<td>${delayInfo.value.inProcessTask }</td>
 			<td>${delayInfo.value.remainZxid }</td>
 		</tr>

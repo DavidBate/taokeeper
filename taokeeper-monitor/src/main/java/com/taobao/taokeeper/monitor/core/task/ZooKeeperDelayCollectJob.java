@@ -76,7 +76,7 @@ public class ZooKeeperDelayCollectJob implements Runnable {
 								info.setInProcessTask(en.getValue().getOutstanding());
 								long leadZxid = Long.parseLong(leaderInfo.getZxid().substring(2), 16);
 								long zxid = Long.parseLong(en.getValue().getZxid().substring(2), 16);
-								info.setSyncDelay(leadZxid - zxid);
+//								info.setSyncDelay(leadZxid - zxid);
 								zxid = leadZxid & ZooKeeperDelayInfo.ZXID_MAX;
 								info.setRemainZxid(ZooKeeperDelayInfo.ZXID_MAX - zxid);
 							}

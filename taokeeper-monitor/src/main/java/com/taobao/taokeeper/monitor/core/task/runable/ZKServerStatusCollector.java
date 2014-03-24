@@ -136,14 +136,14 @@ public class ZKServerStatusCollector implements Runnable {
 			out = new PrintStream(tc.getOutputStream());
 			out.println(cmd);
 			out.flush();
-			byte[] buf = new byte[10224*1024];
+			byte[] buf = new byte[1024];
 			int len = -1;
 			while((len = in.read(buf)) >= 0){
 				bos.write(buf, 0, len);
 			}
 			return new String(bos.toByteArray());
 		} catch (Exception e) {
-			LOG.error("exec command :" + cmd + " failed ." + e.getMessage(), e.getCause());
+			LOG.error("exec command :" + ip + ":" + cmd + " failed ." + e.getMessage(), e.getCause());
 			return new String(bos.toByteArray());
 		} finally {
 			try {

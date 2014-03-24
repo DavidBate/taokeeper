@@ -20,7 +20,7 @@ public class SrvrInfo {
 
 	public static SrvrInfo parse(String content) {
 		if (StringUtils.isEmpty(content)) {
-			return null;
+			return new SrvrInfo();
 		}
 		SrvrInfo info = new SrvrInfo();
 		parse(content, info);
@@ -33,6 +33,10 @@ public class SrvrInfo {
 		}
 		String[] lines = content.split("\n");
 		for (String line : lines) {
+			if(StringUtils.isBlank(line)){
+				continue;
+			}
+			line = line.trim();
 			if (line.startsWith("Latency")) {
 				String val = line.split(":")[1].trim();
 				String[] tmp = val.split("/");

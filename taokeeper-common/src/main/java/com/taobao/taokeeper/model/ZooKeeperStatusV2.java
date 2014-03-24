@@ -123,6 +123,9 @@ public class ZooKeeperStatusV2 extends ZooKeeperStatus {
 
         @Override
         public String toString() {
+        	if(getData == -1 && setData == -1){
+        		return "";
+        	}
             return "RWStatistics [getChildren2=" + getChildren2 + ", createSession=" + createSession + ", closeSession=" + closeSession
                     + ", setData=" + setData + ", setWatches=" + setWatches + ", getChildren=" + getChildren + ", delete=" + delete
                     + ", create=" + create + ", exists=" + exists + ", getData=" + getData + "]";

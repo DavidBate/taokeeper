@@ -2,12 +2,9 @@ package com.taobao.taokeeper.monitor.core.task.runable;
 
 import static com.taobao.taokeeper.common.constant.SystemConstant.COMMAND_CONS;
 import static com.taobao.taokeeper.common.constant.SystemConstant.MINS_RATE_OF_COLLECT_ZOOKEEPER;
-import static com.taobao.taokeeper.common.constant.SystemConstant.passwordOfSSH;
-import static com.taobao.taokeeper.common.constant.SystemConstant.userNameOfSSH;
 import static common.toolkit.java.constant.BaseConstant.WORD_SEPARATOR;
 import static common.toolkit.java.constant.EmptyObjectConstant.EMPTY_STRING;
 import static common.toolkit.java.constant.EncodingConstant.GBK;
-import static common.toolkit.java.constant.HtmlTagConstant.BR;
 import static common.toolkit.java.constant.SymbolConstant.COLON;
 import static common.toolkit.java.constant.SymbolConstant.COMMA;
 import static common.toolkit.java.constant.SymbolConstant.EQUAL_SIGN;
@@ -34,14 +31,12 @@ import com.taobao.taokeeper.monitor.core.Initialization;
 import common.toolkit.java.entity.DateFormat;
 import common.toolkit.java.entity.io.Connection;
 import common.toolkit.java.exception.DaoException;
-import common.toolkit.java.exception.SSHException;
 import common.toolkit.java.util.DateUtil;
 import common.toolkit.java.util.JsonUtil;
 import common.toolkit.java.util.StringUtil;
 import common.toolkit.java.util.ThreadUtil;
 import common.toolkit.java.util.io.FileUtil;
 import common.toolkit.java.util.io.IOUtil;
-import common.toolkit.java.util.io.SSHUtil;
 /**
  * Description: 这个类收集zk集群上所有客户端发送与接收的数据量。
  * 

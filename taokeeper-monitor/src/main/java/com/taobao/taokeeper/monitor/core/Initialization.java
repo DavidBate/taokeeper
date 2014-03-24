@@ -1,15 +1,25 @@
 package com.taobao.taokeeper.monitor.core;
 
+import java.util.Properties;
+
+import javax.servlet.Servlet;
+import javax.servlet.http.HttpServlet;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
+
 import com.taobao.taokeeper.common.GlobalInstance;
 import com.taobao.taokeeper.common.SystemInfo;
 import com.taobao.taokeeper.common.constant.SystemConstant;
 import com.taobao.taokeeper.dao.SettingsDAO;
 import com.taobao.taokeeper.model.TaoKeeperSettings;
 import com.taobao.taokeeper.model.type.Message;
-import com.taobao.taokeeper.monitor.core.task.*;
-import com.taobao.taokeeper.monitor.core.task.runable.ClientThroughputStatJob;
+import com.taobao.taokeeper.monitor.core.task.ZooKeeperALiveCheckerJob;
+import com.taobao.taokeeper.monitor.core.task.ZooKeeperClusterMapDumpJob;
+import com.taobao.taokeeper.monitor.core2.ScheduleManager;
 import com.taobao.taokeeper.reporter.alarm.TbMessageSender;
-import common.toolkit.java.constant.BaseConstant;
 import common.toolkit.java.exception.DaoException;
 import common.toolkit.java.util.ObjectUtil;
 import common.toolkit.java.util.StringUtil;
@@ -17,15 +27,6 @@ import common.toolkit.java.util.ThreadUtil;
 import common.toolkit.java.util.db.DbcpUtil;
 import common.toolkit.java.util.number.IntegerUtil;
 import common.toolkit.java.util.system.SystemUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.context.ContextLoader;
-import org.springframework.web.context.WebApplicationContext;
-
-import javax.servlet.Servlet;
-import javax.servlet.http.HttpServlet;
-import java.util.Properties;
-import java.util.Timer;
 
 /**
  * Description: System Initialization
@@ -56,27 +57,27 @@ public class Initialization extends HttpServlet implements Servlet {
 			e.printStackTrace();
 		}
 
-		ThreadUtil.startThread( new ClientThroughputStatJob() );
+//		ThreadUtil.startThread( new ClientThroughputStatJob() );
 
 		/** 启动ZooKeeper数据修改通知检测 */
 		ThreadUtil.startThread( new ZooKeeperALiveCheckerJob() );
 
 		/** 启动ZooKeeper集群状态收集 */
-		ThreadUtil.startThread( new ZooKeeperStatusCollectJob() );
+//		ThreadUtil.startThread( new ZooKeeperStatusCollectJob() );
 
 		/** 收集机器CPU LOAD MEMEORY */
-		ThreadUtil.startThread( new HostPerformanceCollectTask() );
+//		ThreadUtil.startThread( new HostPerformanceCollectTask() );
 
         /** */
-        ThreadUtil.startThread( new HostPerformanceCollectTask() );
+//        ThreadUtil.startThread( new HostPerformanceCollectTask() );
         
-        SchedulerManager.init();
+//        SchedulerManager.init();
 
-        Timer timer = new Timer();
-		//开启ZooKeeper Node的Path检查
-		timer.schedule( new ZooKeeperNodeChecker(), 5000, //
-				           BaseConstant.MILLISECONDS_OF_ONE_HOUR  * 
-				           SystemConstant.HOURS_RATE_OF_ZOOKEEPER_NODE_CHECK  );
+//        Timer timer = new Timer();
+//		//开启ZooKeeper Node的Path检查
+//		timer.schedule( new ZooKeeperNodeChecker(), 5000, //
+//				           BaseConstant.MILLISECONDS_OF_ONE_HOUR  * 
+//				           SystemConstant.HOURS_RATE_OF_ZOOKEEPER_NODE_CHECK  );
 
 
         //开启ZooKeeper RT monitor
@@ -91,6 +92,7 @@ public class Initialization extends HttpServlet implements Servlet {
 		
 //		ThreadUtil.startThread( new CheckerJob( "/jingwei-v2/tasks/DAILY-TMALL-DPC-META/locks" ) );
 		
+		ScheduleManager.init();
 
 		LOG.info( "*********************************************************" );
 		LOG.info( "****************TaoKeeper Startup Success****************" );
