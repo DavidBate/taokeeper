@@ -104,7 +104,6 @@ public class ZooKeeperStatusController extends BaseController {
 						long leaderZxid = Long.parseLong(leaderInfo.getZxid().substring(2), 16);
 						leaderZxid = leaderZxid & ZooKeeperDelayInfo.ZXID_MAX;
 						delay.setRemainZxid(ZooKeeperDelayInfo.ZXID_MAX - leaderZxid);
-//						delay.setSyncDelay(leaderZxid - zxid);
 						delayMap.put(entry.getKey(), delay);
 					}
 				}

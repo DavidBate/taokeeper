@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -82,7 +83,10 @@ public class AlarmSettingsController extends BaseController {
 			String dataDir,
 			String dataLogDir,
 			String maxDiskUsage,
-			String nodePathCheckRule ) {
+			String nodePathCheckRule,
+			String maxConnections,
+			String maxTpsRead,
+			String maxTpsWrite) {
 		
 		try {
 			if( StringUtil.isBlank( clusterId ) )
@@ -103,6 +107,9 @@ public class AlarmSettingsController extends BaseController {
 			alarmSettings.setDataLogDir( StringUtil.trimToEmpty( dataLogDir ) );
 			alarmSettings.setMaxDiskUsage( StringUtil.trimToEmpty( maxDiskUsage ) );
 			alarmSettings.setNodePathCheckRule( StringUtil.trimToEmpty( nodePathCheckRule ) );
+			alarmSettings.setMaxConnections(NumberUtils.toInt(maxConnections, 9000));
+			alarmSettings.setMaxTpsRead(NumberUtils.toInt(maxTpsRead, 200000));
+			alarmSettings.setMaxTpsWrite(NumberUtils.toInt(maxTpsWrite, 5000));
 			//进行Update
 			String handleMessage = null;
 			if( alarmSettingsDAO.updateAlarmSettingsByClusterId( alarmSettings ) ){

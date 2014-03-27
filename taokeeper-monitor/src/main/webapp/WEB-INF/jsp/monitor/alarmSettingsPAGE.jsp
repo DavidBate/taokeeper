@@ -86,7 +86,21 @@ a:visited { text-decoration:none}
 	  		"<b>/</b>"这个path下，只能够出现nileader和yinshi这两个节点，"<b>/nileader</b>" 这个path下，只能够出现test节点, "<b>/</b>" 这个path下，不能够出现test节点<br>
 		 	</td>
 		 </tr>
-
+		 
+		 <tr>
+		 	<td valign="middle">单机连接数报警</td>
+		 	<td valign="middle" ><input type="text" name="maxConnections" id="maxConnections" value="${alarmSettings.maxConnections}"/></td>
+		 </tr>
+		 
+		 <tr>
+		 	<td valign="middle">集群读TPS报警</td>
+		 	<td valign="middle" ><input type="text" name="maxTpsRead" id="maxTpsRead" value="${alarmSettings.maxTpsRead}"/></td>
+		 </tr>
+		 
+		 <tr>
+		 	<td valign="middle">集群写TPS报警</td>
+		 	<td valign="middle" ><input type="text" name="maxTpsWrite" id="maxTpsWrite" value="${alarmSettings.maxTpsWrite}"/></td>
+		 </tr>
 
 	
 	

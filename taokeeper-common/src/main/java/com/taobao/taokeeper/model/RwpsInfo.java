@@ -27,6 +27,16 @@ public class RwpsInfo {
 	int create = -1;
 	int exists = -1;
 	int getData = -1;
+	
+	public int getWriteTPS(){
+		int tps = createSession + closeSession + setData + delete + create;
+		return tps < 0 ? 1 : tps;
+	}
+	
+	public int getReadTPS(){
+		int tps = getChildren2 + setWatches + getChildren + exists + getData ;
+		return tps < 0 ? 1 : tps;
+	}
 
 	
 	static int string2int(String line, String prefix){

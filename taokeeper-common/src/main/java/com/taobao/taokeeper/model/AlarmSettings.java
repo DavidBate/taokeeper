@@ -25,6 +25,10 @@ public class AlarmSettings {
 	private String dataDir;
 	private String dataLogDir;
 	private String maxDiskUsage;	//设置的目录的最大使用率，如果超过这个阈值，会报警。
+	
+	private int maxConnections;
+	private int maxTpsRead;
+	private int maxTpsWrite;
 
 	
 	public AlarmSettings(){}
@@ -42,7 +46,10 @@ public class AlarmSettings {
 			                           String dataDir, //
 			                           String dataLogDir, //
 			                           String maxDiskUsage,//
-			                           String nodePathCheckRule  ){
+			                           String nodePathCheckRule,
+			                           int maxConnections,
+			                           int maxTpsRead, 
+			                           int maxTpsWrite){
 		this.clusterId = clusterId;
 		this.maxDelayOfCheck = maxDelayOfCheck;
 		this.maxCpuUsage = maxCpuUsage;
@@ -57,6 +64,11 @@ public class AlarmSettings {
 		this.dataLogDir = dataLogDir;
 		this.nodePathCheckRule = nodePathCheckRule;
 		this.setMaxDiskUsage( maxDiskUsage );
+		
+		this.maxConnections = maxConnections;
+		this.maxTpsRead = maxTpsRead;
+		this.maxTpsWrite = maxTpsWrite;
+		
 	}
 	
 	public int getClusterId() {
@@ -144,6 +156,31 @@ public class AlarmSettings {
 
 	public void setMaxDiskUsage( String maxDiskUsage ) {
 		this.maxDiskUsage = maxDiskUsage;
+	}
+
+
+	public int getMaxConnections() {
+		return maxConnections;
+	}
+
+	public void setMaxConnections(int maxConnections) {
+		this.maxConnections = maxConnections;
+	}
+
+	public int getMaxTpsRead() {
+		return maxTpsRead;
+	}
+
+	public void setMaxTpsRead(int maxTpsRead) {
+		this.maxTpsRead = maxTpsRead;
+	}
+
+	public int getMaxTpsWrite() {
+		return maxTpsWrite;
+	}
+
+	public void setMaxTpsWrite(int maxTpsWrite) {
+		this.maxTpsWrite = maxTpsWrite;
 	}
 
 	/**

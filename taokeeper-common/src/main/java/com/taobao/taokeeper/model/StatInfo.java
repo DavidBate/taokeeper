@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 
 /**
  * 
@@ -17,6 +18,7 @@ public class StatInfo {
 	List<String> clients;
 	SrvrInfo srvrInfo;
 	String content;
+	int connectionSize;
 
 	public String getContent() {
 		return content;
@@ -40,6 +42,14 @@ public class StatInfo {
 
 	public void setSrvrInfo(SrvrInfo srvrInfo) {
 		this.srvrInfo = srvrInfo;
+	}
+
+	public int getConnectionSize() {
+		return connectionSize;
+	}
+
+	public void setConnectionSize(int connectionSize) {
+		this.connectionSize = connectionSize;
 	}
 
 	public static StatInfo parse(String content) {
@@ -67,6 +77,8 @@ public class StatInfo {
 					clients.add(line);
 				} else if (StringUtils.startsWith(line, "Latency")) {
 					srvrInfo = true;
+				} else if(StringUtils.startsWith(line, "total connection size")){
+					info.setConnectionSize(NumberUtils.toInt(line.substring("total connection size = ".length())));
 				}
 				if(srvrInfo){
 					srvrStr.append(line).append("\n");
@@ -87,4 +99,10 @@ public class StatInfo {
 		return info;
 	}
 	
+	
+	public static void main(String[] args) {
+		String str = "total connection size = 10\n /10.232.2.221:56263[0](queued=0,recved=1,sent=0)\nLatency min/avg/max: 0/0/0\nReceived: 3\nSent: 2\nOutstanding: 0\nZxid: 0x0\nMode: standalone\nNode count: 4";
+		StatInfo info = StatInfo.parse(str);
+		System.out.println(info.getConnectionSize() == 10);
+	}
 }

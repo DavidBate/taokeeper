@@ -122,7 +122,7 @@ public class ClientThroughputStatJob implements Runnable {
 			Map< String, Connection > connectionMapOfServer = new HashMap< String, Connection >();
 			try {
 //				String consOutput = SSHUtil.execute( ip, SystemConstant.portOfSSH, userNameOfSSH, passwordOfSSH, StringUtil.replaceSequenced( COMMAND_CONS, ip, port ) );
-				String consOutput = ZKDataUtil.execCmdBySockset(ip, Integer.parseInt(port), SystemConstant.CONS);
+				String consOutput = ZKDataUtil.execCmdBySocket(ip, Integer.parseInt(port), SystemConstant.CONS);
 
 				/**
 				 * Example: /10.232.38.158:50097[0](queued=0,recved=1,sent=0)

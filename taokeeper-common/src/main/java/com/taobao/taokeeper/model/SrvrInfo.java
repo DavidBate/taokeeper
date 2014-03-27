@@ -8,6 +8,9 @@ import org.apache.commons.lang.StringUtils;
  */
 
 public class SrvrInfo {
+	
+	static final long MAX_ZXID = 0xffffffffL;
+	
 	int minLatency;
 	int avgLatency;
 	int maxLatency;
@@ -130,5 +133,12 @@ public class SrvrInfo {
 	public void setNodeCount(long nodeCount) {
 		this.nodeCount = nodeCount;
 	}
-
+	public boolean isLeader(){
+		return StringUtils.equals(mode, "leader");
+	}
+	
+	public long getRemainZxid(){
+		long xid = Long.parseLong(zxid.substring(2), 16) & MAX_ZXID;
+		return MAX_ZXID - xid;
+	}
 }

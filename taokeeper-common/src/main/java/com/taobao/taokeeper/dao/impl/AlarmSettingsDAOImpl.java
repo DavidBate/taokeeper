@@ -6,6 +6,8 @@ import static common.toolkit.java.constant.EmptyObjectConstant.EMPTY_STRING;
 
 import java.sql.ResultSet;
 
+import org.apache.commons.lang.math.NumberUtils;
+
 import com.taobao.taokeeper.dao.AlarmSettingsDAO;
 import com.taobao.taokeeper.model.AlarmSettings;
 import common.toolkit.java.entity.db.DBConnectionResource;
@@ -47,6 +49,9 @@ public class AlarmSettingsDAOImpl implements AlarmSettingsDAO{
 				String dataLogDir			= rs.getString( "data_log_dir" );
 				String maxDiskUsage			= rs.getString( "max_disk_usage" );
 				String nodePathCheckRule			= StringUtil.trimToEmpty( rs.getString( "node_path_check_rule" ) );
+				String maxConnections = rs.getString("max_connections");
+				String maxTpsRead = rs.getString("max_tps_read");
+				String maxTpsWrite = rs.getString("max_tps_write");
 				
 				alarmSettings = new AlarmSettings();
 				alarmSettings.setClusterId( clusterId );
@@ -63,6 +68,10 @@ public class AlarmSettingsDAOImpl implements AlarmSettingsDAO{
 				alarmSettings.setDataLogDir( dataLogDir );
 				alarmSettings.setMaxDiskUsage( maxDiskUsage );
 				alarmSettings.setNodePathCheckRule( nodePathCheckRule );
+				
+				alarmSettings.setMaxConnections(NumberUtils.toInt(maxConnections, 9000));
+				alarmSettings.setMaxTpsRead(NumberUtils.toInt(maxTpsRead, 200000));
+				alarmSettings.setMaxTpsWrite(NumberUtils.toInt(maxTpsWrite, 5000));
 			}
 			return alarmSettings;
 		} catch ( Exception e ) {
@@ -162,6 +171,9 @@ public class AlarmSettingsDAOImpl implements AlarmSettingsDAO{
     				                                                                                   alarmSettings.getDataLogDir(), //
     				                                                                                   alarmSettings.getMaxDiskUsage(), //
     				                                                                                   alarmSettings.getNodePathCheckRule(), //
+    				                                                                                   alarmSettings.getMaxConnections() + EMPTY_STRING,
+    				                                                                                   alarmSettings.getMaxTpsRead() + EMPTY_STRING,
+    				                                                                                   alarmSettings.getMaxTpsWrite() + EMPTY_STRING,
     				                                                                                   alarmSettings.getClusterId() + EMPTY_STRING );
 			int num = DbcpUtil.executeUpdate( updateSql );
 			if( 1 == num ){

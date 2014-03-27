@@ -38,7 +38,7 @@ public class CommandTask extends BaseTask {
 			public void run() {
 				try {
 					log.info("run task: " + taskDesc());
-					String result = ZKDataUtil.execCmdBySockset(host, port, command);
+					String result = ZKDataUtil.execCmdBySocket(host, port, command);
 					if (StringUtils.equals(command, CMD_SRVR)) {
 						SrvrInfo info = SrvrInfo.parse(result);
 						ZookeeperData.srvrMap.put(MonitorUtils.hostId(host, port), info);

@@ -30,6 +30,15 @@ public class ZookeeperData {
 	
 	public static Map<String, ZooKeeperRTInfo> rtMap = new ConcurrentHashMap<String, ZooKeeperRTInfo>();
 	
+	public static StatInfo getStat(String ip, int port){
+		String hostId = MonitorUtils.hostId(ip, port);
+		return statMap.get(hostId);
+	}
+	
+	public static RwpsInfo getRwps(String ip, int port){
+		String hostId = MonitorUtils.hostId(ip, port);
+		return rwpsMap.get(hostId);
+	}
 	
 	public static SrvrInfo getSrvr(String ip, int port){
 		String hostId = MonitorUtils.hostId(ip, port);

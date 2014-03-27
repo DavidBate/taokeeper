@@ -12,10 +12,14 @@ import org.slf4j.LoggerFactory;
 
 import com.taobao.taokeeper.common.GlobalInstance;
 import com.taobao.taokeeper.model.AlarmSettings;
+import com.taobao.taokeeper.model.AlertInfo;
 import com.taobao.taokeeper.model.Subscriber;
 import com.taobao.taokeeper.model.ZooKeeperCluster;
 import com.taobao.taokeeper.model.type.Message;
 import com.taobao.taokeeper.monitor.core.ThreadPoolManager;
+import com.taobao.taokeeper.monitor.core2.EventDispatcher;
+import com.taobao.taokeeper.monitor.core2.Events.AlertEvent;
+import com.taobao.taokeeper.monitor.core2.task.AlertTask;
 import com.taobao.taokeeper.reporter.alarm.TbMessageSender;
 import common.toolkit.java.util.ObjectUtil;
 import common.toolkit.java.util.StringUtil;
@@ -97,11 +101,15 @@ public class ZKServerAliveCheck implements Runnable {
 								GlobalInstance.putZooKeeperStatusType( ip, 2 );
 								// 报警
 								if ( GlobalInstance.needAlarm.get() ) {
-									ThreadPoolManager.addJobToMessageSendExecutor( new TbMessageSender( new Message( wangwangList, "ZooKeeper所在机器存活性检测失败" + this.zooKeeperCluster.getClusterName(), "Zk node: "
-											+ server + " 存活性检测失败", Message.MessageType.WANGWANG ) ) );
-									
-									ThreadPoolManager.addJobToMessageSendExecutor( new TbMessageSender( new Message( phoneList, "ZooKeeper所在机器存活性检测失败" + this.zooKeeperCluster.getClusterName(), "Zk node: " + server
-											+ " 存活性检测失败", Message.MessageType.WANGWANG ) ) );
+									EventDispatcher.fireEvent(new AlertEvent(new AlertTask(null, new AlertInfo(
+											wangwangList, phoneList, "ZooKeeper所在机器存活性检测失败"
+													+ this.zooKeeperCluster.getClusterName() + "\r\nZk node: " + server
+													+ " 存活性检测失败"))));
+//									ThreadPoolManager.addJobToMessageSendExecutor( new TbMessageSender( new Message( wangwangList, "ZooKeeper所在机器存活性检测失败" + this.zooKeeperCluster.getClusterName(), "Zk node: "
+//											+ server + " 存活性检测失败", Message.MessageType.WANGWANG ) ) );
+//									
+//									ThreadPoolManager.addJobToMessageSendExecutor( new TbMessageSender( new Message( phoneList, "ZooKeeper所在机器存活性检测失败" + this.zooKeeperCluster.getClusterName(), "Zk node: " + server
+//											+ " 存活性检测失败", Message.MessageType.WANGWANG ) ) );
 								}
 								LOG.info( "#-" + this.zooKeeperCluster.getClusterName() + "-" + server + "自检结果ERROR" );
 								continue;

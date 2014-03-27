@@ -10,7 +10,7 @@ var editing=false;
 						+ "<input type='hidden' name='path' value='${path}'/>"
 						+ "<input type='hidden' name='clusterId' value='${clusterId}'/>"
 						+ "<input type='hidden' name='version' value='${node.stat.version}'/>"
-						+ "<table><tr><td colspan='2'><textarea cols='90' rows='10' name='data' id='new_data'>"
+						+ "<table><tr><td colspan='2'><textarea cols='70' rows='9' name='data' id='new_data'>"
 						+ value
 						+ "</textarea></td></tr>"
 						+ "<tr><td colspan='2'><input type='submit' value='Save' id='save_data'/></td></tr>"
@@ -105,8 +105,8 @@ var editing=false;
 <div>data:</div>
 <input type='hidden' value="${node.data }" id='data' />
 <c:if test="${empty login }">
-	<div id='data_container'>${node.data }</div>
+	<div id='data_container' style="overflow: scroll;width:100%;height: 200px">${node.data }</div>
 </c:if>
 <c:if test="${!empty login }">
-	<div id='data_container' onclick='edit();'>${node.data }</div>
+	<div id='data_container' onclick='edit();'  style="width:100%;overflow: scroll;height: 200px">${node.data }</div>
 </c:if>

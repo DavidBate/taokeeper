@@ -162,12 +162,11 @@
 			<artifactId>commons-net</artifactId>
 		</dependency>
 
-
-
-
-
-
-
+		<dependency>
+			<groupId>com.taobao.jm.alert</groupId>
+			<artifactId>jm-alert</artifactId>
+			<version>1.0.1</version>
+		</dependency>
 	</dependencies>
 
 </project>

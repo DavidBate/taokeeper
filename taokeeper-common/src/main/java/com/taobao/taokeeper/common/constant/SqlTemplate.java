@@ -34,7 +34,10 @@ public class SqlTemplate {
 			                                                                                                    "data_dir, " +
 			                                                                                                    "data_log_dir, " +
 			                                                                                                    "max_disk_usage, " +
-			                                                                                                    "node_path_check_rule " +
+			                                                                                                    "node_path_check_rule, " +
+			                                                                                                    "max_connections," +
+			                                                                                                    "max_tps_read,"+
+			                                                                                                    "max_tps_write "+
 			                                                                                                    "FROM " +
 			                                                                                                    "alarm_settings " +
 			                                                                                                    "WHERE " +
@@ -55,9 +58,12 @@ public class SqlTemplate {
 																												"data_dir='{9}', " +
 																												"data_log_dir='{10}', " +
 																												"max_disk_usage='{11}', " +
-																												"node_path_check_rule='{12}' " +
+																												"node_path_check_rule='{12}'," +
+																												"max_connections='{13}'," +
+																												"max_tps_read='{14}',"+
+																												"max_tps_write='{15} '"+
 																												"WHERE " +
-																												"cluster_id= {13}";
+																												"cluster_id= {16}";
 	
 	/** Add alarm settings , cluster_id, max_delay_of_check, max_cpu_usage, max_memory_usage, max_load, wangwang_list, phone_list, email_list */
 	public static final String SQL_ADD_ALARM_SETTINGS                   = "INSERT INTO alarm_settings ( cluster_id, max_delay_of_check, max_cpu_usage, max_memory_usage, max_load, wangwang_list, phone_list, email_list, max_connection_per_ip, max_watch_per_ip, data_dir, data_log_dir, max_disk_usage ) VALUES ( '{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}')";
