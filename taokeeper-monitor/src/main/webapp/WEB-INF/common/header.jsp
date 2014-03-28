@@ -10,8 +10,6 @@
 				<li><a
 					href="<c:url value="/zooKeeperStatus.do?method=showZooKeeperStatusPAGE&clusterId=${clusterId}" />">集群监控</a></li>
 				<li><a
-					href="<c:url value="/hostPerformance.do?method=showHostPerformancePAGE&clusterId=${clusterId}" />">机器监控</a></li>
-				<li><a
 					href="<c:url value="/alarmSettings.do?method=alarmSettingsPAGE&clusterId=${clusterId}" />">报警设置</a></li>
 				<li><a
 				href="<c:url value="/tree.do?clusterId=${clusterId}" />">节点浏览</a></li>
