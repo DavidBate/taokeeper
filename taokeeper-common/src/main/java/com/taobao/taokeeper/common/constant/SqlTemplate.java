@@ -61,7 +61,7 @@ public class SqlTemplate {
 																												"node_path_check_rule='{12}'," +
 																												"max_connections='{13}'," +
 																												"max_tps_read='{14}',"+
-																												"max_tps_write='{15} '"+
+																												"max_tps_write='{15}'"+
 																												"WHERE " +
 																												"cluster_id= {16}";
 	
@@ -72,6 +72,8 @@ public class SqlTemplate {
 	
 	public static final String SQL_UPDATE_ZOOKEEPER_CLUSTER_SETTINGS_BY_ID   = "UPDATE zookeeper_cluster SET cluster_name='{0}', server_list='{1}', description='{2}' WHERE cluster_id= {3}";
 	public static final String SQL_ADD_ZOOKEEPER_CLUSTER              = "INSERT INTO zookeeper_cluster ( cluster_name, server_list, description ) VALUES ('{0}','{1}','{2}')";
+	
+	public static final String SQL_DELETE_ZOOKEEPER_CLUSTER = "DELETE FROM zookeeper_cluster where cluster_id = {0}";
 	
 	
 	

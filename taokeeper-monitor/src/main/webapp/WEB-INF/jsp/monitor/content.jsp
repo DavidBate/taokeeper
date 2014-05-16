@@ -103,7 +103,7 @@ var editing=false;
 </br>
 </br>
 <div>data:</div>
-<input type='hidden' value="${node.data }" id='data' />
+<input type='hidden' value='${node.data}' id='data' />
 <c:if test="${empty login }">
 	<div id='data_container' style="overflow: scroll;width:100%;height: 200px">${node.data }</div>
 </c:if>

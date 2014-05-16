@@ -24,6 +24,7 @@ public class RTTask extends BaseTask{
 	public RTTask(ExecutorService pool, String host, int port) {
 		super(pool, host, port);
 	}
+	
 
 	@Override
 	public void work() {
@@ -48,7 +49,7 @@ public class RTTask extends BaseTask{
 					st = System.currentTimeMillis();
 					for (int i = 0; i < cnt; i++) {
 						try {
-							zkClient.create("/qiaoyi.dingqy" + i, "rtMonitor".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+							zkClient.create("/qiaoyi.dingqy" + host + i, "rtMonitor".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
 									CreateMode.EPHEMERAL);
 						} catch (Exception e) {
 						}
@@ -58,7 +59,7 @@ public class RTTask extends BaseTask{
 					st = System.currentTimeMillis();
 					for (int i = 0; i < cnt; i++) {
 						try {
-							zkClient.exists("/qiaoyi.dingqy" + i);
+							zkClient.exists("/qiaoyi.dingqy" + host + i);
 						} catch (Exception e) {
 						}
 					}
@@ -67,7 +68,7 @@ public class RTTask extends BaseTask{
 					st = System.currentTimeMillis();
 					for (int i = 0; i < cnt; i++) {
 						try {
-							zkClient.writeData("/qiaoyi.dingqy" + i, "rtMonitor".getBytes());
+							zkClient.writeData("/qiaoyi.dingqy" + host + i, "rtMonitor".getBytes());
 						} catch (Exception e) {
 						}
 					}
@@ -76,30 +77,33 @@ public class RTTask extends BaseTask{
 					st = System.currentTimeMillis();
 					for (int i = 0; i < cnt; i++) {
 						try {
-							zkClient.readData("/qiaoyi.dingqy" + i);
+							zkClient.readData("/qiaoyi.dingqy"+ host  + i);
 						} catch (Exception e) {
 						}
 					}
 					rt = System.currentTimeMillis() - st;
 					rtInfo.setGetData(rt / cnt);
+					
 					st = System.currentTimeMillis();
 					for (int i = 0; i < cnt; i++) {
 						try {
-							zkClient.delete("/qiaoyi.dingqy" + i);
-						} catch (Exception e) {
-						}
-					}
-					rt = System.currentTimeMillis() - st;
-					rtInfo.setDelete(rt / cnt);
-					st = System.currentTimeMillis();
-					for (int i = 0; i < cnt; i++) {
-						try {
-							zkClient.getChildren("/qiaoyi.dingqy" + i);
+							zkClient.getChildren("/qiaoyi.dingqy" + host + i);
 						} catch (Exception e) {
 						}
 					}
 					rt = System.currentTimeMillis() - st;
 					rtInfo.setGetChildren(rt / cnt);
+					
+					st = System.currentTimeMillis();
+					for (int i = 0; i < cnt; i++) {
+						try {
+							zkClient.delete("/qiaoyi.dingqy"+ host  + i);
+						} catch (Exception e) {
+						}
+					}
+					rt = System.currentTimeMillis() - st;
+					rtInfo.setDelete(rt / cnt);
+					
 				} catch (Exception e) {
 					log.error("collect " + host + " rt error:" + e.getMessage(), e.getCause());
 				} finally {

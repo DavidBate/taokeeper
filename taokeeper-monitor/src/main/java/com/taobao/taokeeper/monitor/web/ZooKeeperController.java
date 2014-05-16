@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -39,6 +40,19 @@ public class ZooKeeperController extends BaseController {
 	
 	
 	private static final Logger LOG = LoggerFactory.getLogger( ZooKeeperController.class ); 
+	
+	@RequestMapping(params = "method=zooKeeperDelete")
+	public String zookeeperDeletePAGE(HttpServletRequest request, HttpServletResponse response, String clusterId){
+		int cid = NumberUtils.toInt(clusterId, -1);
+		try {
+			zooKeeperClusterDAO.deledeZooKeeper(cid);
+			ThreadPoolManager.addJobToZKClusterDumperExecutor( new ZKClusterConfigDumper() );
+			return "redirect:/zooKeeper.do?method=zooKeeperSettingsPAGE&clusterId=1";
+		} catch (DaoException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	
 	@RequestMapping(params = "method=zooKeeperRegisterPAGE")

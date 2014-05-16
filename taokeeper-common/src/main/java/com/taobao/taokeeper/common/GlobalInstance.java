@@ -84,7 +84,7 @@ public class GlobalInstance {
 	, AlarmSettings > alarmSettingsMap = new ConcurrentHashMap< Integer, AlarmSettings >();
 
 	/** 全局报警开关 */
-	public static AtomicBoolean needAlarm = new AtomicBoolean( false );
+	public static AtomicBoolean needAlarm = new AtomicBoolean( true );
 
 	/** 当前正在检查的集群 */
 	public static ConcurrentLinkedQueue< String > allCheckingCluster = new ConcurrentLinkedQueue< String >();

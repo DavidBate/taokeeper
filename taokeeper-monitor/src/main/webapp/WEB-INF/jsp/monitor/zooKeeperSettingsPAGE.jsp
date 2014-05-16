@@ -32,6 +32,8 @@ a:visited { text-decoration:none}
 		</c:choose>
 	</c:forEach>
 </select>
+
+<a href="zooKeeper.do?method=zooKeeperDelete&clusterId=${clusterId}"></a>
 <div align="center" class="mytable" id="tab">
 
 <form name="updateZooKeeperSettings"  id="updateZooKeeperSettings"  action="zooKeeper.do?method=updateZooKeeperSettingsHandle"  method="post">

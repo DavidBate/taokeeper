@@ -29,4 +29,6 @@ public interface ZooKeeperClusterDAO {
 	public int addZooKeeper( ZooKeeperCluster zooKeeperCluster ) throws DaoException;
 	
 	
+	public int deledeZooKeeper(int clusterId) throws DaoException	;
+	
 }

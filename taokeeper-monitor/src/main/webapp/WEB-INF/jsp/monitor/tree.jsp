@@ -76,5 +76,5 @@
 			id="search_op" onclick="searchnodes()" value="Search" />
 	</div>
 	<div id="zkTree" style="width:30%;float:left;overflow:hidden"></div>
-	<div id="content" style="width:50%;position: fixed;right:5%;top: 13%"></div>
+	<div id="content" style="width:55%;float:right;right:5%;top: 13%"></div>
 </div>

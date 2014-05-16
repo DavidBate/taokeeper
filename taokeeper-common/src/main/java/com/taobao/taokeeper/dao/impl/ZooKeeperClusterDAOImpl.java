@@ -1,9 +1,5 @@
 package com.taobao.taokeeper.dao.impl;
-import static com.taobao.taokeeper.common.constant.SqlTemplate.SQL_ADD_ZOOKEEPER_CLUSTER;
-import static com.taobao.taokeeper.common.constant.SqlTemplate.SQL_QUERY_ALL_CLUSTER_ID_NAME;
-import static com.taobao.taokeeper.common.constant.SqlTemplate.SQL_QUERY_ALL_DETAIL_CLUSTER;
-import static com.taobao.taokeeper.common.constant.SqlTemplate.SQL_QUERY_CLUSTER_BY_ID;
-import static com.taobao.taokeeper.common.constant.SqlTemplate.SQL_UPDATE_ZOOKEEPER_CLUSTER_SETTINGS_BY_ID;
+import static com.taobao.taokeeper.common.constant.SqlTemplate.*;
 import static common.toolkit.java.constant.EmptyObjectConstant.EMPTY_STRING;
 import static common.toolkit.java.constant.SymbolConstant.COMMA;
 
@@ -185,6 +181,19 @@ public class ZooKeeperClusterDAOImpl implements ZooKeeperClusterDAO{
 			return key;
 		} catch ( Exception e ) {
 			throw new DaoException( "Error when add zooKeeperCluster" + zooKeeperCluster + ", Error: " + e.getMessage(), e );
+		}
+	}
+	
+	@Override
+	public int deledeZooKeeper(int clusterId) throws DaoException {
+		if(clusterId == -1){
+			return -1;
+		}
+		String sql = StringUtil.replaceSequenced(SQL_DELETE_ZOOKEEPER_CLUSTER, EMPTY_STRING + clusterId);
+		try {
+			return DbcpUtil.executeDelete(sql);
+		} catch (Exception e) {
+			throw new DaoException( "Error when delete zooKeeperCluster" + clusterId + ", Error: " + e.getMessage(), e );
 		}
 	}
 }
