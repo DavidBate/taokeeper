@@ -68,7 +68,7 @@
 		Node-ZK-Browser
 	</h2>
 	<div>
-		<a href="create.do?clusterId=${clusterId }" target="content">create path</a>
+		<a href="create.do?clusterId=${clusterId}" target="content">create path</a>
 	</div>
 	<div>
 		<input type="text" id="search_path" value="${path}"/> 

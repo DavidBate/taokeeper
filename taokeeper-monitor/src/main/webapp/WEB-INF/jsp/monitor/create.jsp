@@ -1,5 +1,6 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
 <form action="create.do" method="post">
+	<input type="hidden" name="clusterId" value="${clusterId}">
 	<table>
 		<tr>
 			<td>Path</td>
