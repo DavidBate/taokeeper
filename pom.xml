@@ -378,7 +378,7 @@
 				<groupId>com.taobao.taokeeper</groupId>
 				<artifactId>zkclient</artifactId>
 				<version>${zkclient.version}</version>
-			</dependency>
+			</dependency> 
 
 			<!-- JSON -->
 			<dependency>
@@ -450,7 +450,7 @@
 
 
 			<!-- toolkit -->
-			<dependency>
+			<!-- <dependency>
 				<groupId>common.toolkit</groupId>
 				<artifactId>common-toolkit</artifactId>
 				<version>${toolkit.version}</version>
@@ -461,7 +461,7 @@
 				<artifactId>common-toolkit</artifactId>
 				<version>${toolkit.version}</version>
 				<classifier>sources</classifier>
-			</dependency>
+			</dependency> -->
 			
 			<dependency>
 				<groupId>commons-net</groupId>

@@ -5,8 +5,8 @@ import java.util.concurrent.ExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.taobao.jm.alert.AlertManager;
-import com.taobao.jm.alert.DefaultAlertManager;
+//import com.taobao.jm.alert.AlertManager;
+//import com.taobao.jm.alert.DefaultAlertManager;
 import com.taobao.taokeeper.model.AlertInfo;
 
 /**
@@ -17,15 +17,15 @@ import com.taobao.taokeeper.model.AlertInfo;
 public class AlertTask {
 
 	static final Logger log = LoggerFactory.getLogger(AlertTask.class);
-	static final AlertManager alertManager = new DefaultAlertManager("taokeeper", "pingwei@0325");
-	static{
-		alertManager.init();
-	}
+//	static final AlertManager alertManager = new DefaultAlertManager("taokeeper", "pingwei@0325");
+//	static{
+//		alertManager.init();
+//	}
 
 	
-	public static void main(String[] args) {
-		System.out.println(alertManager.sendTbWWAlert("平威", "taokeeper报警", "daily test"));
-	}
+//	public static void main(String[] args) {
+//		System.out.println(alertManager.sendTbWWAlert("平威", "taokeeper报警", "daily test"));
+//	}
 	AlertInfo alert;
 	ExecutorService pool;
 
@@ -53,16 +53,16 @@ public class AlertTask {
 	}
 	
 	private void alert(){
-		if (alert == null) {
-			return;
-		}
-		for (String ww : alert.getWangwangAsList()) {
-			log.info(alertManager.sendTbWWAlert(ww, "taokeeper报警", alert.getContent()).toString());
-		}
-		
-		for(String mobile : alert.getMobileAsList()){
-			log.info(alertManager.sendSms(mobile, alert.getContent()).toString());
-		}
+//		if (alert == null) {
+//			return;
+//		}
+//		for (String ww : alert.getWangwangAsList()) {
+//			log.info(alertManager.sendTbWWAlert(ww, "taokeeper报警", alert.getContent()).toString());
+//		}
+//		
+//		for(String mobile : alert.getMobileAsList()){
+//			log.info(alertManager.sendSms(mobile, alert.getContent()).toString());
+//		}
 	}
 
 }
